@@ -1,14 +1,3 @@
-variable "aws_account_id" {
-  type        = string
-  description = "AWS Account ID"
-  sensitive   = false
-  nullable    = false
-  validation {
-    condition     = regexall("[[:digit:]]{12}", var.aws_account_id)
-    error_message = "account_id must be a 12 digit AWS account ID"
-  }
-}
-
 variable "enforce_domain_name" {
   default     = "guak.dev"
   type        = string

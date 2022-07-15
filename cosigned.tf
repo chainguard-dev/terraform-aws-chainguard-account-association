@@ -15,27 +15,23 @@ resource "aws_iam_role" "cosigned_role" {
           // component, which mints tokens suitable for reading images from ECR.
           // We are authorizing components nested under GROUP to perform this
           // impersonation.
-          "issuer.${var.ENV}:sub" : "cosigned:${var.GROUP}"
+          "issuer.${var.enforce_domain_name}:sub" : "cosigned:${var.enforce_group_id}"
           // Tokens must be intended for use with Amazon.
-          "issuer.${var.ENV}:aud" : "amazon"
+          "issuer.${var.enforce_domain_name}:aud" : "amazon"
         }
       }
     }]
   })
-  depends_on = [aws_iam_openid_connect_provider.chainguard_idp]
 }
 
 // The permissions to grant the "cosigned" role.
 resource "aws_iam_role_policy_attachment" "cosigned_ecr_read" {
   role       = aws_iam_role.cosigned_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-  depends_on = [aws_iam_role.cosigned_role]
 }
 
 resource "aws_iam_role_policy_attachment" "cosigned_kms_pki_read" {
   role = aws_iam_role.cosigned_role.name
   // TODO: Is there a better policy for what we need?
   policy_arn = "arn:aws:iam::aws:policy/AWSKeyManagementServicePowerUser"
-  depends_on = [aws_iam_role.cosigned_role]
 }
-
