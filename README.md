@@ -1,6 +1,63 @@
 # Terraform AWS Enforce Module
 
-Terraform module to connect Chainguard Enforce to your AWS Account
+Terraform module to connect Chainguard Enforce to your AWS Account.
+
+This module is needed if you're using [Chainguard
+Enforce](https://www.chainguard.dev/chainguard-enforce) and:
+
+- Your containers (along with potential signatures and SBOMs etc) are in
+a private AWS ECR registry
+- Your signatures are created via AWS KMS
+- Your using managed (i.e agentless) clusters in EKS
+
+## Usage
+
+This module binds an Enforce IAM group to an AWS account. To set up the connect
+in Enforce using the CLI run:
+
+```
+export ENFORCE_GROUP_ID="<<uidp of target Enforce IAM group>>
+export AWS_ACCOUNT_ID="12 digit AWS account ID to connect to"
+
+chainctl iam group set-aws $ENFORCE_GROUP_ID --account $AWS_ACCOUNT_ID
+```
+
+Or using our (soon to be released publically) Terraform provider
+
+```Terraform
+resource "chainguard_account_associations" "example" {
+  group = "<< enforce group id>>"
+  amazon {
+    account = "<< 12 digit account id>>"
+  } 
+}
+```
+
+To configured the connection on AWS side use this module as follows:
+
+```Terraform
+module "enforce_account_assoc" {
+    source = "chainguard-dev/enforce/aws"
+    
+    enforce_group_id = "<< enforce group id>>"
+}
+```
+
+## How does it work?
+
+Chainguard Enforce has an OIDC identity provider. This module configured your
+AWS account to recognize that OIDC identity provider and allows certain tokens
+to bind to certain AWS IAM roles. In particular it allows:
+
+- Our policy controller to bind to a role that gives us read access to your ECR
+  registry to check signatures
+- Our policy controller public key read access to your KMS keys to validate KMS
+  signatures
+- Our agentless controller to list and describe EKS clusters if using managed
+  clusters
+
+This access is restricted to clusters and policies you've configured at or
+below the scope of the Enforce group you configure.
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
