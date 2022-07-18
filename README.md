@@ -36,10 +36,12 @@ resource "chainguard_account_associations" "example" {
 To configured the connection on AWS side use this module as follows:
 
 ```Terraform
-module "enforce_account_assoc" {
-    source = "chainguard-dev/enforce/aws"
-    
-    enforce_group_id = "<< enforce group id>>"
+
+
+module "chainguard-account-association" {
+  source = "chainguard-dev/chainguard-account-association/aws"
+
+  enforce_group_id = "<< enforce group id>>"
 }
 ```
 

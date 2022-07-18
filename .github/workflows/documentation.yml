@@ -7,10 +7,8 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-      with:
-        ref: ${{ github.event.pull_request.head.ref }}
-
+    - name: Checkout code
+      uses: actions/checkout@v2
     - name: Render terraform docs and fail on diff
       uses: terraform-docs/gh-actions@main
       with:
