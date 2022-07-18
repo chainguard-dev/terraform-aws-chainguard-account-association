@@ -1,6 +1,6 @@
-# Terraform AWS Enforce Module
+# Terraform AWS Chainguard Account Association Module
 
-Terraform module to connect Chainguard Enforce to your AWS Account.
+Terraform module to connect Chainguard to your AWS Account.
 
 This module is needed if you're using [Chainguard
 Enforce](https://www.chainguard.dev/chainguard-enforce) and:
