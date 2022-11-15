@@ -1,3 +1,7 @@
+locals {
+  enforce_group_ids = length(var.enforce_group_ids) > 0 ? var.enforce_group_ids : [var.enforce_group_id]
+}
+
 // This configures a Chainguard environment's OIDC issuer as an Identity
 // Provider (IdP), and allows the list of audiences specified via AUDIENCE.
 resource "aws_iam_openid_connect_provider" "chainguard_idp" {
@@ -16,7 +20,7 @@ resource "aws_iam_openid_connect_provider" "chainguard_idp" {
 }
 
 resource "aws_iam_role" "canary_role" {
-  for_each = toset(var.enforce_group_ids)
+  for_each = toset(local.enforce_group_ids)
 
   // Canary role has no permissions, but is used to validate that AWS account
   // connection has been correctly set up.

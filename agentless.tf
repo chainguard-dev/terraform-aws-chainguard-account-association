@@ -5,7 +5,7 @@
 //        --arn arn:aws:iam::${TF_VAR_ACCOUNT_ID}:role/chainguard-agentless \
 //        --group system:masters --username admin
 resource "aws_iam_role" "agentless_role" {
-  for_each = toset(var.enforce_group_ids)
+  for_each = toset(local.enforce_group_ids)
 
   name = "chainguard-agentless"
   assume_role_policy = jsonencode({
