@@ -26,7 +26,7 @@ module "account_association" {
 
   aws_account_id      = data.aws_caller_identity.current.account_id
   enforce_domain_name = "chainguard.dev"
-  enforce_group_id    = chainguard_group.root.id
+  enforce_group_ids   = [chainguard_group.root.id]
 }
 
 data "aws_caller_identity" "current" {}

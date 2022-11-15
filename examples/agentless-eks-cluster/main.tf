@@ -29,7 +29,7 @@ module "account_association" {
 
   aws_account_id      = data.aws_caller_identity.current.account_id
   enforce_domain_name = "chainguard.dev"
-  enforce_group_id    = chainguard_group.root.id
+  enforce_group_ids   = [chainguard_group.root.id]
 }
 
 data "aws_caller_identity" "current" {}
@@ -70,9 +70,9 @@ module "eks" {
   }
 
   manage_aws_auth_configmap = true
-  aws_auth_roles = [
+  aws_auth_roles = [for arn in toset(module.account_association.agentless_role_arn) :
     {
-      rolearn  = module.account_association.agentless_role_arn
+      rolearn  = arn
       username = "admin"
       groups = [
         "system:masters",

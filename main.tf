@@ -16,9 +16,11 @@ resource "aws_iam_openid_connect_provider" "chainguard_idp" {
 }
 
 resource "aws_iam_role" "canary_role" {
+  for_each = toset(var.enforce_group_ids)
+
   // Canary role has no permissions, but is used to validate that AWS account
   // connection has been correctly set up.
-  name = "chainguard-canary"
+  name = "chainguard-canary-${each.value}"
   assume_role_policy = jsonencode({
     "Version" : "2012-10-17",
     "Statement" : [{
@@ -33,7 +35,7 @@ resource "aws_iam_role" "canary_role" {
           // component, which mints tokens suitable for testing.  We are
           // authorizing components nested under GROUP to perform this
           // impersonation.
-          "issuer.${var.enforce_domain_name}:sub" : "canary:${var.enforce_group_id}"
+          "issuer.${var.enforce_domain_name}:sub" : "canary:${each.value}"
           // Tokens must be intended for use with Amazon.
           "issuer.${var.enforce_domain_name}:aud" : "amazon"
         }
