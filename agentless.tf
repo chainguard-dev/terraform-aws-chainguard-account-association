@@ -1,5 +1,6 @@
-// This defines a role without permissions in IAM, but which should be authorized
-// to manage clusters via:
+// This role needs to be able to list cluster information to fetch the cluster
+// endpoint information, but permission to connect to the cluster must also be
+// granted at the cluster level with:
 //   eksctl create iamidentitymapping --cluster  <clusterName> --region=<region> \
 //        --arn arn:aws:iam::${TF_VAR_ACCOUNT_ID}:role/chainguard-agentless \
 //        --group system:masters --username admin
@@ -28,7 +29,7 @@ resource "aws_iam_role" "agentless_role" {
   })
 }
 
-// Our agentless roles need describe/list to look up cluster names from
+// Our agentless/discovery roles need describe/list to look up cluster names from
 // the EKS endpoints they are provided.  As our managed agents start up
 // they will look up the cluster-name based on this endpoint, and then
 // use that cluster-name to authenticate with the cluster.
