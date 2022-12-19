@@ -29,7 +29,7 @@ resource "aws_iam_role" "agentless_role" {
   })
 }
 
-// Our agentless/discovery roles need describe/list to look up cluster names from
+// Our agentless role needs describe/list to look up cluster names from
 // the EKS endpoints they are provided.  As our managed agents start up
 // they will look up the cluster-name based on this endpoint, and then
 // use that cluster-name to authenticate with the cluster.
