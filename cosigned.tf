@@ -1,7 +1,5 @@
 resource "aws_iam_role" "cosigned_role" {
-  for_each = toset(local.enforce_group_ids)
-
-  name = "chainguard-cosigned-${each.value}"
+  name = "chainguard-cosigned"
 
   assume_role_policy = jsonencode({
     "Version" : "2012-10-17",
@@ -17,7 +15,7 @@ resource "aws_iam_role" "cosigned_role" {
           // component, which mints tokens suitable for reading images from ECR.
           // We are authorizing components nested under GROUP to perform this
           // impersonation.
-          "issuer.${var.enforce_domain_name}:sub" : "cosigned:${each.value}"
+          "issuer.${var.enforce_domain_name}:sub" : [for id in local.enforce_group_ids : "cosigned:${id}"]
           // Tokens must be intended for use with Amazon.
           "issuer.${var.enforce_domain_name}:aud" : "amazon"
         }
@@ -28,16 +26,12 @@ resource "aws_iam_role" "cosigned_role" {
 
 // The permissions to grant the "cosigned" role.
 resource "aws_iam_role_policy_attachment" "cosigned_ecr_read" {
-  for_each = aws_iam_role.cosigned_role
-
-  role       = each.value.name
+  role       = aws_iam_role.agentless_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
 
 resource "aws_iam_role_policy_attachment" "cosigned_kms_pki_read" {
-  for_each = aws_iam_role.cosigned_role
-
-  role = each.value.name
+  role = aws_iam_role.agentless_role.name
   // TODO: Is there a better policy for what we need?
   policy_arn = "arn:aws:iam::aws:policy/AWSKeyManagementServicePowerUser"
 }

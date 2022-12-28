@@ -5,8 +5,6 @@
 //        --arn arn:aws:iam::${TF_VAR_ACCOUNT_ID}:role/chainguard-agentless \
 //        --group system:masters --username admin
 resource "aws_iam_role" "agentless_role" {
-  for_each = toset(local.enforce_group_ids)
-
   name = "chainguard-agentless"
   assume_role_policy = jsonencode({
     "Version" : "2012-10-17",
@@ -22,7 +20,7 @@ resource "aws_iam_role" "agentless_role" {
           // components, which mints tokens suitable for talking to EKS
           // clusters.  We are authorizing components nested under GROUP
           // to perform this impersonation.
-          "issuer.${var.enforce_domain_name}:sub" : "agentless:${each.value}"
+          "issuer.${var.enforce_domain_name}:sub" : [for id in local.enforce_group_ids : "agentless:${id}"]
           // Tokens must be intended for use with Amazon.
           "issuer.${var.enforce_domain_name}:aud" : "amazon"
         }
@@ -59,8 +57,6 @@ resource "aws_iam_policy" "eks_read_policy" {
 
 // The permissions to grant the "agentless" role.
 resource "aws_iam_role_policy_attachment" "agentless_eks_read" {
-  for_each = aws_iam_role.agentless_role
-
-  role       = each.value.name
+  role       = aws_iam_role.agentless_role.name
   policy_arn = aws_iam_policy.eks_read_policy.arn
 }

@@ -14,7 +14,7 @@ resource "aws_iam_role" "discovery_role" {
           // components, which mints tokens suitable for talking to EKS
           // clusters.  We are authorizing components nested under GROUP
           // to perform this impersonation.
-          "issuer.${var.enforce_domain_name}:sub" : "discovery:${var.enforce_group_id}"
+          "issuer.${var.enforce_domain_name}:sub" : [for id in local.enforce_group_ids : "discovery:${id}"]
           // Tokens must be intended for use with Amazon.
           "issuer.${var.enforce_domain_name}:aud" : "amazon"
         }

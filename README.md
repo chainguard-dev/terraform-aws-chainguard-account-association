@@ -41,7 +41,8 @@ To configured the connection on AWS side use this module as follows:
 module "chainguard-account-association" {
   source = "chainguard-dev/chainguard-account-association/aws"
 
-  enforce_group_ids = ["<< enforce group id >>"]
+  enforce_group_id  = "<< enforce group id >>"
+  enforce_group_ids = ["<< enforce group id 1 >>", "<< enforce group id 2 >>"] # Optional, used only when more than one group
 }
 ```
 
@@ -72,7 +73,7 @@ below the scope of the Enforce group you configure.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.39.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
 
 ## Modules
 
