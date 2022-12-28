@@ -42,7 +42,6 @@ module "chainguard-account-association" {
   source = "chainguard-dev/chainguard-account-association/aws"
 
   enforce_group_id  = "<< enforce group id >>"
-  enforce_group_ids = ["<< enforce group id 1 >>", "<< enforce group id 2 >>"] # Optional, used only when more than one group
 }
 ```
 
