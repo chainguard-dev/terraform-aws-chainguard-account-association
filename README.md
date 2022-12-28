@@ -104,7 +104,7 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_enforce_domain_name"></a> [enforce\_domain\_name](#input\_enforce\_domain\_name) | Domain name of your Chainguard Enforce environment | `string` | `"enforce.dev"` | no |
-| <a name="input_enforce_group_id"></a> [enforce\_group\_id](#input\_enforce\_group\_id) | DEPRECATED: Please use 'enforce\_group\_ids'. Enforce IAM group ID to bind your AWS account to | `string` | n/a | yes |
+| <a name="input_enforce_group_id"></a> [enforce\_group\_id](#input\_enforce\_group\_id) | DEPRECATED: Please use 'enforce\_group\_ids'. Enforce IAM group ID to bind your AWS account to | `string` | `""` | no |
 | <a name="input_enforce_group_ids"></a> [enforce\_group\_ids](#input\_enforce\_group\_ids) | Enforce IAM group IDs to bind your AWS account to. If both 'enforce\_group\_id' and 'enforce\_group\_ids' are specified, 'enforce\_group\_id' is ignored. | `list(string)` | `[]` | no |
 
 ## Outputs
