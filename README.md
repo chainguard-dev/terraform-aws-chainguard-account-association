@@ -26,7 +26,7 @@ Or using our (soon to be released publically) Terraform provider
 
 ```Terraform
 resource "chainguard_account_associations" "example" {
-  group = ["<< enforce group id >>"]
+  group = "<< enforce group id >>"
   amazon {
     account = "<< 12 digit account id >>"
   } 
