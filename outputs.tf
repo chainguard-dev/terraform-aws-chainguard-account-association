@@ -1,5 +1,5 @@
 output "agentless_role_arn" {
-  value = aws_iam_role.agentless_role.arn
+  value       = aws_iam_role.agentless_role.arn
   description = <<-EOF
     This defines a role without permissions in IAM, but which should be authorized
     to manage clusters via:
