@@ -26,9 +26,9 @@ Or using our (soon to be released publically) Terraform provider
 
 ```Terraform
 resource "chainguard_account_associations" "example" {
-  group = "<< enforce group id>>"
+  group = "<< enforce group id >>"
   amazon {
-    account = "<< 12 digit account id>>"
+    account = "<< 12 digit account id >>"
   }
 }
 ```
@@ -41,7 +41,8 @@ To configured the connection on AWS side use this module as follows:
 module "chainguard-account-association" {
   source = "chainguard-dev/chainguard-account-association/aws"
 
-  enforce_group_id = "<< enforce group id>>"
+  enforce_group_id  = "<< enforce group id >>"
+  enforce_group_ids = ["<< enforce group id 1 >>", "<< enforce group id 2 >>"] # Optional, used only when more than one group
 }
 ```
 
@@ -73,6 +74,7 @@ below the scope of the Enforce group you configure.
 | Name | Version |
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 2.7.0 |
+| <a name="provider_null"></a> [null](#provider\_null) | n/a |
 
 ## Modules
 
@@ -96,6 +98,7 @@ No modules.
 | [aws_iam_role_policy_attachment.cosigned_kms_pki_read](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_role_policy_attachment.discovery_cluster_viewer](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_role_policy_attachment.enforce_signer_kms_keys](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
+| [null_resource.enforce_group_id_is_specified](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 
 ## Inputs
@@ -103,7 +106,8 @@ No modules.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_enforce_domain_name"></a> [enforce\_domain\_name](#input\_enforce\_domain\_name) | Domain name of your Chainguard Enforce environment | `string` | `"enforce.dev"` | no |
-| <a name="input_enforce_group_id"></a> [enforce\_group\_id](#input\_enforce\_group\_id) | Enforce IAM group ID to bind your AWS account to | `string` | n/a | yes |
+| <a name="input_enforce_group_id"></a> [enforce\_group\_id](#input\_enforce\_group\_id) | DEPRECATED: Please use 'enforce\_group\_ids'. Enforce IAM group ID to bind your AWS account to | `string` | `""` | no |
+| <a name="input_enforce_group_ids"></a> [enforce\_group\_ids](#input\_enforce\_group\_ids) | Enforce IAM group IDs to bind your AWS account to. If both 'enforce\_group\_id' and 'enforce\_group\_ids' are specified, 'enforce\_group\_id' is ignored. | `list(string)` | `[]` | no |
 
 ## Outputs
 

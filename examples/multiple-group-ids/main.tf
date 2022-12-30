@@ -25,7 +25,7 @@ module "account_association" {
   source = "./../../"
 
   enforce_domain_name = "chainguard.dev"
-  enforce_group_id    = chainguard_group.root.id
+  enforce_group_ids   = [chainguard_group.root.id, "0000000000000"]
 }
 
 data "aws_caller_identity" "current" {}

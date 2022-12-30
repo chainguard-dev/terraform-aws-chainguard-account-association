@@ -1,3 +1,7 @@
+locals {
+  enforce_group_ids = length(var.enforce_group_ids) > 0 ? var.enforce_group_ids : [var.enforce_group_id]
+}
+
 // This configures a Chainguard environment's OIDC issuer as an Identity
 // Provider (IdP), and allows the list of audiences specified via AUDIENCE.
 resource "aws_iam_openid_connect_provider" "chainguard_idp" {
@@ -33,7 +37,7 @@ resource "aws_iam_role" "canary_role" {
           // component, which mints tokens suitable for testing.  We are
           // authorizing components nested under GROUP to perform this
           // impersonation.
-          "issuer.${var.enforce_domain_name}:sub" : "canary:${var.enforce_group_id}"
+          "issuer.${var.enforce_domain_name}:sub" : [for id in local.enforce_group_ids : "canary:${id}"]
           // Tokens must be intended for use with Amazon.
           "issuer.${var.enforce_domain_name}:aud" : "amazon"
         }

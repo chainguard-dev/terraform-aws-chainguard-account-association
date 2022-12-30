@@ -8,7 +8,7 @@ terraform {
     }
     chainguard = {
       # NB: This provider is currently not public
-      source = "chainguard-dev/chainguard"
+      source = "chainguard/chainguard"
     }
   }
 }
@@ -27,7 +27,6 @@ resource "chainguard_group" "root" {
 module "account_association" {
   source = "./../../"
 
-  aws_account_id      = data.aws_caller_identity.current.account_id
   enforce_domain_name = "chainguard.dev"
   enforce_group_id    = chainguard_group.root.id
 }
