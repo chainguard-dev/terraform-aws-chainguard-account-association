@@ -73,7 +73,7 @@ below the scope of the Enforce group you configure.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.39.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 2.7.0 |
 | <a name="provider_null"></a> [null](#provider\_null) | n/a |
 
 ## Modules
