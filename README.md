@@ -29,7 +29,7 @@ resource "chainguard_account_associations" "example" {
   group = "<< enforce group id >>"
   amazon {
     account = "<< 12 digit account id >>"
-  } 
+  }
 }
 ```
 
@@ -73,7 +73,8 @@ below the scope of the Enforce group you configure.
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 2.7.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.39.0 |
+| <a name="provider_null"></a> [null](#provider\_null) | n/a |
 
 ## Modules
 
@@ -97,6 +98,7 @@ No modules.
 | [aws_iam_role_policy_attachment.cosigned_kms_pki_read](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_role_policy_attachment.discovery_cluster_viewer](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [aws_iam_role_policy_attachment.enforce_signer_kms_keys](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
+| [null_resource.enforce_group_id_is_specified](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 
 ## Inputs

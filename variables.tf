@@ -11,7 +11,6 @@ variable "enforce_group_id" {
   description = "DEPRECATED: Please use 'enforce_group_ids'. Enforce IAM group ID to bind your AWS account to"
   default     = ""
   sensitive   = false
-  nullable    = false
 
   validation {
     condition     = var.enforce_group_id != "" ? length(regexall("^[a-f0-9]{40}(\\/[a-f0-9]{16})*$", var.enforce_group_id)) == 1 : true
@@ -28,5 +27,14 @@ variable "enforce_group_ids" {
   validation {
     condition     = can([for g in var.enforce_group_ids : regex("^[a-f0-9]{40}(\\/[a-f0-9]{16})*$", g)])
     error_message = "IDs in enforce_group_ids must be a valid group id."
+  }
+}
+
+resource "null_resource" "enforce_group_id_is_specified" {
+  lifecycle {
+    precondition {
+      condition     = length(var.enforce_group_ids) > 0 || var.enforce_group_id != ""
+      error_message = "one of variable [enforce_group_id, enforce_group_ids] must be specified."
+    }
   }
 }
