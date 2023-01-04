@@ -17,7 +17,7 @@ resource "aws_iam_role" "enforce_signer_role" {
           // component, which mints tokens suitable for encrypting and decrypting keys.
           // We are authorizing components nested under GROUP to perform this
           // impersonation.
-          "issuer.${var.enforce_domain_name}:sub" : [for id in local.enforce_group_ids : "signer:${id}"]
+          "issuer.${var.enforce_domain_name}:sub" : [for id in local.enforce_group_ids : "enforce-signer:${id}"]
           // Tokens must be intended for use with Amazon.
           "issuer.${var.enforce_domain_name}:aud" : "amazon"
         }
@@ -26,12 +26,10 @@ resource "aws_iam_role" "enforce_signer_role" {
   })
 }
 
-// Our enforce signer role needs encrypt/decrypt/re-encrypt with KMS.
-// This policy is based on this sample:
-// https://docs.aws.amazon.com/eks/latest/userguide/security_iam_id-based-policy-examples.html#policy_example2
+// Our enforce signer role needs sign with KMS and get the public key for root cert verification.
 resource "aws_iam_policy" "enforce_signer_policy" {
   name        = "chainguard-signer-policy"
-  description = "A policy to allow Chainguard to Encrypt|Decrypt|Reencrypt using KMS."
+  description = "A policy to allow Chainguard to sign and verify using KMS."
   policy      = <<-EOF
     {
       "Version": "2012-10-17",
@@ -39,9 +37,9 @@ resource "aws_iam_policy" "enforce_signer_policy" {
         {
           "Effect": "Allow",
           "Action": [
-            "kms:Encrypt",
-            "kms:Decrypt",
-            "kms:ReEncrypt*"
+            "kms:Sign",
+            "kms:GetPublicKey",
+            "kms:DescribeKey"
           ],
           "Resource": "*"
         }
