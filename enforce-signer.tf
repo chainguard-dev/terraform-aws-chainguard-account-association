@@ -1,5 +1,3 @@
-data "aws_caller_identity" "current" {}
-
 resource "aws_iam_role" "enforce_signer_role" {
   name = "chainguard-enforce-signer"
 
@@ -30,22 +28,20 @@ resource "aws_iam_role" "enforce_signer_role" {
 resource "aws_iam_policy" "enforce_signer_policy" {
   name        = "chainguard-signer-policy"
   description = "A policy to allow Chainguard to sign and verify using KMS."
-  policy      = <<-EOF
-    {
-      "Version": "2012-10-17",
-      "Statement": [
-        {
-          "Effect": "Allow",
-          "Action": [
-            "kms:Sign",
-            "kms:GetPublicKey",
-            "kms:DescribeKey"
-          ],
-          "Resource": "*"
-        }
-      ]
-    }
-  EOF
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "kms:Sign",
+          "kms:GetPublicKey",
+          "kms:DescribeKey"
+        ],
+        "Resource" : "*"
+      }
+    ]
+  })
 }
 
 // The permissions to grant the "enforce_signer" role.
