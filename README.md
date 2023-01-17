@@ -43,10 +43,11 @@ module "aws-impersonation" {
   enforce_group_ids = ["<< enforce group id 1 >>", "<< enforce group id 2 >>"] # Optional, used only when more than one group
 }
 
-// While the above is global configuration, this module must be invoked for each
-// AWS region containing resources to be monitored by Enforce.
+# While the above is global configuration, this module must be invoked for each
+# AWS region containing resources to be monitored by Enforce.
 module "aws-auditlogs" {
-  source = "chainguard-dev/chainguard-account-association/aws/auditlogs"
+  # The // here tells terraform that auditlogs is a directory in the repo.
+  source = "chainguard-dev/chainguard-account-association/aws//auditlogs"
 }
 ```
 
