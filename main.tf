@@ -1,3 +1,5 @@
+data "aws_caller_identity" "current" {}
+
 locals {
   enforce_group_ids = length(var.enforce_group_ids) > 0 ? var.enforce_group_ids : [var.enforce_group_id]
 }
@@ -12,9 +14,9 @@ resource "aws_iam_openid_connect_provider" "chainguard_idp" {
   # This is not easily scripted, so hard-coding this seems preferable.  Follow
   # the AWS documentation for producing thumbprint if this does not work.
   thumbprint_list = [
-    # ISRG root certificate (LetsEncrypt) 
+    # ISRG root certificate (LetsEncrypt)
     "933c6ddee95c9c41a40f9f50493d82be03ad87bf",
-    # GlobalSign root certificate (Google Managed Certficates) 
+    # GlobalSign root certificate (Google Managed Certficates)
     "08745487e891c19e3078c1f2a07e452950ef36f6"
   ]
 }

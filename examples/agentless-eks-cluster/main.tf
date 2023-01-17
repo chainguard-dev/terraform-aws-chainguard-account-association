@@ -14,7 +14,7 @@ terraform {
 }
 
 provider "chainguard" {
-  console_api = "https://console-api.chainguard.dev"
+  console_api = "https://console-api.enforce.dev"
 }
 
 provider "aws" {}
@@ -24,11 +24,15 @@ resource "chainguard_group" "root" {
   description = "root group for demo"
 }
 
-module "account_association" {
+module "aws-impersonation" {
   source = "./../../"
 
-  enforce_domain_name = "chainguard.dev"
+  enforce_domain_name = "enforce.dev"
   enforce_group_id    = chainguard_group.root.id
+}
+
+module "aws-auditlogs" {
+  source = "./../../auditlogs"
 }
 
 data "aws_caller_identity" "current" {}

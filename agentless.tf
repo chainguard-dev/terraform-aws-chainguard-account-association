@@ -38,21 +38,19 @@ resource "aws_iam_role" "agentless_role" {
 resource "aws_iam_policy" "eks_read_policy" {
   name        = "chainguard-eks-read-policy"
   description = "A policy to allow Chainguard to list and describe EKS clusters."
-  policy      = <<-EOF
-    {
-      "Version": "2012-10-17",
-      "Statement": [
-        {
-          "Effect": "Allow",
-          "Action": [
-            "eks:DescribeCluster",
-            "eks:ListClusters"
-          ],
-          "Resource": "*"
-        }
-      ]
-    }
-  EOF
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "eks:DescribeCluster",
+          "eks:ListClusters"
+        ],
+        "Resource" : "*"
+      }
+    ]
+  })
 }
 
 // The permissions to grant the "agentless" role.
