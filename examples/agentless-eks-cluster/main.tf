@@ -73,15 +73,6 @@ module "eks" {
   }
 
   manage_aws_auth_configmap = true
-  aws_auth_roles = [
-    {
-      rolearn  = module.account_association.agentless_role_arn
-      username = "admin"
-      groups = [
-        "system:masters",
-      ]
-    }
-  ]
 }
 
 resource "chainguard_cluster" "terraform-provider-demo" {
