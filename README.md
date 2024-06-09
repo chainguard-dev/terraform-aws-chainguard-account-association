@@ -1,68 +1,36 @@
-# Terraform AWS Chainguard Account Association Module
+# Configure Chainguard service access.
 
-Terraform module to connect Chainguard to your AWS Account.
+Terraform module to connect Chainguard to your AWS account.
 
-This module is needed if you're using [Chainguard
-Enforce](https://www.chainguard.dev/chainguard-enforce) and:
-
-- Your containers (along with potential signatures and SBOMs etc) are in
-a private AWS ECR registry
-- Your signatures are created via AWS KMS
+This module is needed to leverage certain service integrations from
+[Chainguard](https://www.chainguard.dev).
 
 ## Usage
+This module binds a Chainguard IAM group to a AWS account.
 
-This module binds an Enforce IAM group to an AWS account. To set up the connect
-in Enforce using the CLI run:
-
-```
-export ENFORCE_GROUP_ID="<<uidp of target Enforce IAM group>>
-export AWS_ACCOUNT_ID="12 digit AWS account ID to connect to"
-
-chainctl iam group set-aws $ENFORCE_GROUP_ID --account $AWS_ACCOUNT_ID
-```
-
-Or using our (soon to be released publically) Terraform provider
-
-```Terraform
-resource "chainguard_account_associations" "example" {
-  group = "<< enforce group id >>"
-  amazon {
-    account = "<< 12 digit account id >>"
-  }
-}
-```
-
-To configured the connection on AWS side use this module as follows:
-
-```Terraform
-module "aws-impersonation" {
+```terraform
+module "chainguard-account-association" {
   source = "chainguard-dev/chainguard-account-association/aws"
 
-  enforce_group_id  = "<< enforce group id >>"
-  enforce_group_ids = ["<< enforce group id 1 >>", "<< enforce group id 2 >>"] # Optional, used only when more than one group
+  group_ids = [var.group_id]
+  account   = var.account
 }
 
-# While the above is global configuration, this module must be invoked for each
-# AWS region containing resources to be monitored by Enforce.
-module "aws-auditlogs" {
-  # The // here tells terraform that auditlogs is a directory in the repo.
-  source = "chainguard-dev/chainguard-account-association/aws//auditlogs"
+resource "chainguard_account_associations" "example" {
+  name  = "example"
+  group = var.group_id
+
+  amazon {
+    account = var.account
+  }
 }
 ```
 
 ## How does it work?
 
-Chainguard Enforce has an OIDC identity provider. This module configured your
-AWS account to recognize that OIDC identity provider and allows certain tokens
-to bind to certain AWS IAM roles. In particular it allows:
-
-- Our policy controller to bind to a role that gives us read access to your ECR
-  registry to check signatures
-- Our policy controller public key read access to your KMS keys to validate KMS
-  signatures
-
-This access is restricted to clusters and policies you've configured at or
-below the scope of the Enforce group you configure.
+Chainguard has an OIDC identity provider. This module configures your AWS
+acccount to recognize that OIDC identity provider and allows certain tokens
+to bind to certain IAM roles.
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
@@ -76,7 +44,6 @@ below the scope of the Enforce group you configure.
 | Name | Version |
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 2.7.0 |
-| <a name="provider_null"></a> [null](#provider\_null) | n/a |
 
 ## Modules
 
@@ -87,25 +54,15 @@ No modules.
 | Name | Type |
 |------|------|
 | [aws_iam_openid_connect_provider.chainguard_idp](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_openid_connect_provider) | resource |
-| [aws_iam_policy.chainguard_discovery_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
 | [aws_iam_role.canary_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
-| [aws_iam_role.cosigned_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
-| [aws_iam_role.discovery_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
-| [aws_iam_role.ingester_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
-| [aws_iam_role_policy_attachment.cosigned_ecr_read](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
-| [aws_iam_role_policy_attachment.cosigned_kms_pki_read](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
-| [aws_iam_role_policy_attachment.discovery_cluster_viewer](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
-| [aws_iam_role_policy_attachment.ingester_ecr_read](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
-| [null_resource.enforce_group_id_is_specified](https://registry.terraform.io/providers/hashicorp/null/latest/docs/resources/resource) | resource |
-| [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_enforce_domain_name"></a> [enforce\_domain\_name](#input\_enforce\_domain\_name) | Domain name of your Chainguard Enforce environment | `string` | `"enforce.dev"` | no |
-| <a name="input_enforce_group_id"></a> [enforce\_group\_id](#input\_enforce\_group\_id) | DEPRECATED: Please use 'enforce\_group\_ids'. Enforce IAM group ID to bind your AWS account to | `string` | `""` | no |
-| <a name="input_enforce_group_ids"></a> [enforce\_group\_ids](#input\_enforce\_group\_ids) | Enforce IAM group IDs to bind your AWS account to. If both 'enforce\_group\_id' and 'enforce\_group\_ids' are specified, 'enforce\_group\_id' is ignored. | `list(string)` | `[]` | no |
+| <a name="input_account"></a> [account](#input\_account) | The AWS account ID to which we are binding the Chainguard groups. | `string` | n/a | yes |
+| <a name="input_environment"></a> [environment](#input\_environment) | Domain of the Chainguard environment | `string` | `"enforce.dev"` | no |
+| <a name="input_group_ids"></a> [group\_ids](#input\_group\_ids) | Chainguard IAM group IDs to bind your AWS account to. | `list(string)` | n/a | yes |
 
 ## Outputs
 

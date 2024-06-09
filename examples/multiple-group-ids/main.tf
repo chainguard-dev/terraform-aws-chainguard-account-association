@@ -1,41 +1,44 @@
 terraform {
   required_providers {
-    aws = {
-      source = "hashicorp/aws"
-    }
     chainguard = {
-      # NB: This provider is currently not public
-      source = "chainguard/chainguard"
+      source = "chainguard-dev/chainguard"
     }
   }
 }
 
-provider "chainguard" {
-  console_api = "https://console-api.enforce.dev"
+resource "chainguard_group" "root1" {
+  name        = "demo root 1"
+  description = "root group 1 for demo"
 }
 
-provider "aws" {}
-
-resource "chainguard_group" "root" {
-  name        = "demo root"
-  description = "root group for demo"
-}
-
-module "aws-impersonation" {
-  source = "./../../"
-
-  enforce_domain_name = "enforce.dev"
-  enforce_group_ids   = [chainguard_group.root.id, "0000000000000"]
-}
-
-module "aws-auditlogs" {
-  source = "./../../auditlogs"
+resource "chainguard_group" "root2" {
+  name        = "demo root 2"
+  description = "root group 2 for demo"
 }
 
 data "aws_caller_identity" "current" {}
 
-resource "chainguard_account_associations" "demo-chainguard-dev-binding" {
-  group = chainguard_group.root.id
+module "aws-impersonation" {
+  source = "./../../"
+
+  account   = data.aws_caller_identity.current.account_id
+  group_ids = [
+    chainguard_group.root1.id,
+    chainguard_group.root2.id,
+  ]
+}
+
+resource "chainguard_account_associations" "demo1-chainguard-dev-binding" {
+  name  = "example"
+  group = chainguard_group.root1.id
+  amazon {
+    account = data.aws_caller_identity.current.account_id
+  }
+}
+
+resource "chainguard_account_associations" "demo2-chainguard-dev-binding" {
+  name  = "example"
+  group = chainguard_group.root2.id
   amazon {
     account = data.aws_caller_identity.current.account_id
   }
